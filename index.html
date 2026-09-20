@@ -32,7 +32,16 @@
         <div class="writing" id="reply-fields">
           <label for="response" tabindex="-1">Their exact words.</label>
           <textarea id="response" name="response" required placeholder="Paste the rejection reply here." aria-describedby="response-hint response-limit error"></textarea>
-          <p id="response-hint" class="aside">Keep their words. Leave out names &amp; identifying details.</p>
+          <p id="response-hint" class="aside">Their words, without personal details.</p>
+          <details id="reply-example">
+            <summary><span class="show-example">Show example</span><span class="hide-example">Hide example</span></summary>
+            <div class="example-copy">
+              <p class="aside">The middle bit is enough.</p>
+              <p class="example-trim"><del>Hi Alex,</del></p>
+              <blockquote>Thank you for your application. Unfortunately, we won’t be moving forward with your application at this time.</blockquote>
+              <p class="example-trim"><del>Best,<br>The hiring team</del></p>
+            </div>
+          </details>
           <p id="response-limit" class="aside" hidden>3,000 characters maximum. Please keep the reply verbatim.</p>
         </div>
         <div class="writing" id="silence-fields" hidden>

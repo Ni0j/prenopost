@@ -30,6 +30,14 @@ textarea { resize: vertical; }
 #response { min-height: 150px; font-size: 18px; line-height: 1.6; }
 textarea::placeholder, input::placeholder { color: var(--ink); opacity: 1; font-style: italic; }
 textarea:focus, input[type=number]:focus { border-color: var(--ink); outline-offset: 5px; }
+#reply-example { font-size: 14px; }
+#reply-example summary { cursor: pointer; width: fit-content; min-height: 44px; display: flex; align-items: center; text-decoration: underline; text-underline-offset: 5px; list-style: none; }
+#reply-example summary::-webkit-details-marker { display: none; }
+#reply-example .hide-example, #reply-example[open] .show-example { display: none; }
+#reply-example[open] .hide-example { display: inline; }
+.example-copy { border-left: 1px solid var(--line); padding-left: 18px; margin: 8px 0 20px; }
+.example-copy blockquote { margin: 16px 0; font-size: 16px; }
+.example-trim { font-size: 13px; }
 .days-line { display: flex; align-items: baseline; gap: 16px; margin-top: 22px; }
 #days { width: 150px; font-size: 22px; min-height: 44px; }
 .submission-note { font-size: 13px; line-height: 1.65; margin-top: 28px; }

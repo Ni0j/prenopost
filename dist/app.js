@@ -109,6 +109,7 @@ form.addEventListener('submit', event => {
 });
 $('#again').addEventListener('click', () => {
   form.reset();
+  $('#reply-example').open = false;
   form.elements.outcome.value = 'rejection';
   updateBranch();
   $('#response-limit').hidden = true;
