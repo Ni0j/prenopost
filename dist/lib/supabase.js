@@ -11,6 +11,8 @@ export function createRepository(config, fetcher = fetch) {
       });
     } catch { throw new Error('Could not reach the collection. Your text is still here; please try again.'); }
     if (!response.ok) throw new Error('The request could not be completed. Please try again later.');
+    // This SQL function returns void; a successful response can have no body.
+    if (name === 'submit_rejection') return;
     return response.json();
   }
   return {

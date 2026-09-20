@@ -90,3 +90,21 @@ test('repository sends the new contract, exposes only real activity, and has no 
   });
   assert.equal(repo.remove, undefined);
 });
+
+test('successful void submission responses complete without parsing JSON', async () => {
+  for (const [body, status] of [[null, 204], ['', 200], ['null', 200]]) {
+    const repo = createRepository({ url: 'https://example.supabase.co', key: 'public' },
+      async () => new Response(body, { status }));
+    const send = createSubmissionService(repo);
+    assert.deepEqual(await send(input), { status: 'pending' });
+  }
+});
+test('activity still parses timestamps and failed empty submissions stay failures', async () => {
+  const timestamp = '2026-09-20T12:00:00Z';
+  const repo = createRepository({ url: 'https://example.supabase.co', key: 'public' },
+    async () => new Response(JSON.stringify(timestamp), { status: 200 }));
+  assert.equal(await repo.latest(), timestamp);
+  const failed = createRepository({ url: 'https://example.supabase.co', key: 'public' },
+    async () => new Response(null, { status: 500 }));
+  await assert.rejects(createSubmissionService(failed)(input), /could not be completed/);
+});
