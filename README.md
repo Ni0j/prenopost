@@ -1,32 +1,21 @@
-# Worst case scenario
+# prenopost
 
-A small collector of real cold-outreach rejections for a future rejection simulator.
+Go reach out to someone. Apply for a job.
 
-## Run
+If they say yes, good for you.
 
-Use Node 22.9 or newer. Run `npm start`, then open the address printed in the terminal. The default port is 5173; `.env.example` sets 5174 when copied to `.env`. `npm start` automatically loads `.env` when it exists.
+If they say no—or say nothing at all—bring it here. Someone else might need to hear it first.
 
-Run `npm test` for input validation, literal-text preservation, retry, concurrency, and repository checks.
+prenopost is an independent web project about rejection and the anticipation of it. It begins as a collection of real replies and unanswered emails. Those contributions will become the material for a rejection simulator: a place to encounter the “no” before going out and asking.
 
-## Connect Supabase
+For now, the collection is open. Paste a rejection in its original words, with identifying details removed, or leave the number of days you’ve been waiting. No names, no accounts, no original outreach messages.
 
-Follow [the step-by-step setup](supabase/SETUP.md). Run `supabase/schema.sql` in a new project's SQL Editor. This creates one private table and two narrowly scoped functions. It inserts no sample data. Then set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in `.env`; use a public publishable key, never a secret/service-role key.
+Contributions are reviewed before appearing in the future simulator. The words stay with the people who wrote them; the collection gives them another place to be heard.
 
-The schema is for a new project, matching the current collector. It is not an upgrade script for an older schema.
+[Visit prenopost](https://ni0j.github.io/prenopost/)
 
-Without configuration, activity is marked not connected and submissions fail honestly while retaining the draft. No success or activity is simulated. Unit tests mock HTTP requests; they do not establish a live database connection.
+---
 
-## Flow
+Created by [Ni0j](https://github.com/Ni0j).
 
-The initial page is a short invitation. “bring it here :)” reveals the collector. The rejection field is ready immediately; “Or, no response?” switches to one days field. Returning to the intro or changing the branch preserves drafts. A completed submission can be followed by a fresh entry.
-
-- Rejection: paste the actual reply. Text is preserved as entered, including whitespace and line breaks. Users must redact identifying details themselves. Overlong pastes are rejected without silent truncation.
-- No response: enter a positive whole number of days since the outreach email. Store structured days, not an invented reply.
-- No accounts, names, original outreach messages, questionnaires, or withdrawal flow.
-- A notice about future simulator use appears when an input is focused or edited, and before submission. Privacy details remain in a corner dialog.
-
-All records start pending (`approved_at` is null). Review contributions before approving them for future simulator use. The simulator is not implemented.
-
-Public activity shows only the latest real contribution timestamp, including pending contributions. Table data remains private through RLS and grants. Clients can call `submit_rejection` and `latest_submission`, but cannot directly read, write, or delete rows. Hashed request identities make retries idempotent and are never shown as user-facing codes.
-
-No external fonts, analytics, or cookies. Feature-detected WebMCP uses the same validation and submission flow. Deployment requires suitable API abuse protection/rate limiting.
+© 2026 Ni0j. All rights reserved in the original code, design, and project writing. Contributed material remains the property of its respective rights holders.

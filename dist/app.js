@@ -1,4 +1,4 @@
-import config from '/config.js';
+import config from './config.js';
 import { createRepository } from './lib/supabase.js';
 import { createSubmissionService } from './lib/submission.js';
 import { validateSubmission } from './lib/validation.js';
