@@ -19,13 +19,19 @@ async function refreshActivity() {
     if (Number.isNaN(date.getTime())) throw new Error('Invalid timestamp');
     const time = document.createElement('time');
     time.dateTime = date.toISOString();
-    time.textContent = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+    const day = document.createElement('span');
+    day.textContent = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
+    const clock = document.createElement('span');
+    clock.textContent = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(date);
+    time.title = `Your timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`;
+    time.append(day, clock);
     $('#latest').replaceChildren(time);
   } catch { $('#latest').textContent = '— unavailable'; }
 }
 refreshActivity();
 function clearError() {
   $('#error').textContent = '';
+  $('#form-actions').before($('#error'));
   $('#response').removeAttribute('aria-invalid');
   $('#days').removeAttribute('aria-invalid');
 }
@@ -74,6 +80,7 @@ async function send(input) {
   catch (error) {
     $('#error').textContent = error.message;
     const field = input.outcome === 'no_response' ? $('#days') : $('#response');
+    (input.outcome === 'no_response' ? $('.days-line') : field).after($('#error'));
     field.setAttribute('aria-invalid', 'true');
     field.focus();
     throw error;

@@ -25,7 +25,6 @@
       <p class="intro-afterword">someone else might need to hear it first.</p>
     </section>
     <form id="submission" novalidate hidden>
-      <button id="back" class="back text-button" type="button">← the beginning</button>
       <fieldset id="entry-fields">
         <legend class="sr-only">Contribute a cold-outreach rejection</legend>
         <input type="hidden" name="outcome" value="rejection">
@@ -49,11 +48,14 @@
           <div class="days-line"><input id="days" name="days" type="number" inputmode="numeric" min="1" max="2147483647" step="1" placeholder="14" aria-label="Days since sending the email" aria-describedby="days-hint error" disabled><span>days</span></div>
           <p id="days-hint" class="aside">Since you sent the email.</p>
         </div>
-        <button id="switch-outcome" class="text-button" type="button">Or, no response?</button>
+        <p id="error" role="alert"></p>
+        <div id="form-actions" class="form-actions">
+          <button class="submit" type="submit">Submit ↗</button>
+          <button id="switch-outcome" class="text-button" type="button">Or, no response?</button>
+        </div>
       </fieldset>
       <p id="reuse-note" class="submission-note" hidden>Your contribution may appear in the future rejection simulator. Only share what you’re comfortable making public.</p>
-      <p id="error" role="alert"></p>
-      <button class="submit" type="submit">Submit ↗</button>
+      <button id="back" class="back text-button" type="button">← the beginning</button>
     </form>
     <section id="success" hidden tabindex="-1" aria-labelledby="success-title">
       <h1 id="success-title">Added to the pile.</h1>
