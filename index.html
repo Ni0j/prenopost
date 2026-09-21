@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A collection of real cold-outreach rejections, for a future rejection simulator.">
+  <meta name="description" content="A rejection simulator made from real replies. Hear one first, or bring your own.">
   <title>pre:no:post</title>
   <link rel="icon" href="./dist/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./dist/style.css">
@@ -21,8 +21,26 @@
         <p>if they say yes, good for you.</p>
         <p>if they say no, you get a rejection email,<br>or even no response at all—</p>
       </div>
-      <button id="begin" class="invitation">bring it here :)</button>
+      <div class="form-actions intro-actions">
+        <button id="hear" class="primary-action">hear one first ↗</button>
+        <button id="begin" class="secondary-action">bring yours here :)</button>
+      </div>
       <p class="intro-afterword">someone else might need to hear it first.</p>
+    </section>
+    <section id="generator" hidden aria-labelledby="generator-title">
+      <p class="eyebrow">from the collection</p>
+      <h1 id="generator-title" class="section-title" tabindex="-1">A no, before you go.</h1>
+      <p id="generator-status" class="aside" role="status" aria-live="polite"></p>
+      <div id="generator-result" hidden tabindex="-1" aria-label="A result from the collection">
+        <blockquote id="generated-response"></blockquote>
+        <p id="generated-context" class="aside" hidden></p>
+      </div>
+      <div class="form-actions">
+        <button id="draw-again" class="primary-action">Another ↗</button>
+        <button id="contribute" class="secondary-action">Bring yours</button>
+      </div>
+      <p class="aside generator-note">Real contributions, reviewed for sharing. Some details are removed for privacy.</p>
+      <button id="generator-back" class="back text-button">← the beginning</button>
     </section>
     <form id="submission" novalidate hidden>
       <fieldset id="entry-fields">
@@ -50,17 +68,20 @@
         </div>
         <p id="error" role="alert"></p>
         <div id="form-actions" class="form-actions">
-          <button class="submit" type="submit">Submit ↗</button>
-          <button id="switch-outcome" class="text-button" type="button">Or, no response?</button>
+          <button class="submit primary-action" type="submit">Submit ↗</button>
+          <button id="switch-outcome" class="secondary-action" type="button">Or, no response?</button>
         </div>
       </fieldset>
-      <p id="reuse-note" class="submission-note" hidden>Your contribution may appear in the future rejection simulator. Only share what you’re comfortable making public.</p>
+      <p id="reuse-note" class="submission-note" hidden>A reviewed copy of your contribution may appear in the simulator. Only share what you’re comfortable making public.</p>
       <button id="back" class="back text-button" type="button">← the beginning</button>
     </form>
     <section id="success" hidden tabindex="-1" aria-labelledby="success-title">
-      <h1 id="success-title">Added to the pile.</h1>
+      <h1 id="success-title" class="section-title">Added to the pile.</h1>
       <p>You’ve got company.</p>
-      <button id="again" class="text-button">Got another?</button>
+      <div class="form-actions">
+        <button id="success-hear" class="primary-action">Hear one first ↗</button>
+        <button id="again" class="secondary-action">Got another?</button>
+      </div>
     </section>
     <noscript><p class="aside">Please enable JavaScript to contribute.</p></noscript>
   </main>
@@ -70,14 +91,14 @@
     <h2 id="about-title">pre:no:post</h2>
     <p>A rejection simulator needs rejections. This is where we collect them.</p>
     <p>Real cold-outreach replies, copied word for word. Or the number of days you’ve heard nothing. No positive replies. They have enough places to go.</p>
-    <p>For now, we’re collecting. Reviewed contributions may appear in the simulator later.</p>
+    <p>Hear a real reply before you go asking. Then bring your own, if you get one. The simulator draws from reviewed contributions; it doesn’t predict your outcome.</p>
   </dialog>
   <dialog id="privacy" aria-labelledby="privacy-title">
     <button class="close text-button" autofocus>Close ×</button>
     <h2 id="privacy-title">Privacy</h2>
-    <p>No account. No name fields. Please remove names, signatures, email addresses, company names, and other identifying details before pasting. We don’t automatically anonymize your text.</p>
+    <p>No account. No name fields. Please leave out names, application numbers, contact details, and private links before pasting. We don’t automatically anonymize your text.</p>
     <p>Share only the rejection reply, never your original outreach email. Keep its wording unchanged apart from removing identifying details.</p>
-    <p>We store the rejection text or days without a reply, its type, and the submission time. Reviewed contributions may later be shown to other people in the rejection simulator.</p>
+    <p>Your original contribution stays private. We prepare a separate public copy and review it before it can appear in the simulator. Application numbers, names, contact details, and identifying combinations are removed from that copy. A broad career label may be kept for context.</p>
     <p>There’s no withdrawal option after submitting. Only send something you’re comfortable contributing.</p>
     <p>This application uses no analytics or cookies. Hosting and database providers may retain technical request logs.</p>
   </dialog>

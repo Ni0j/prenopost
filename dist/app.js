@@ -9,6 +9,9 @@ const $ = selector => document.querySelector(selector);
 const form = $('#submission');
 const button = $('.submit');
 let sending = false;
+let drawing = false;
+let lastDrawId = null;
+let drawVersion = 0;
 if (!repository.configured) $('#latest').textContent = '— not connected yet';
 async function refreshActivity() {
   if (!repository.configured) return;
@@ -47,16 +50,87 @@ function updateBranch() {
   clearError();
 }
 function showCollector(focus = true) {
+  leaveGenerator();
   $('#intro').hidden = true;
   $('#success').hidden = true;
   form.hidden = false;
-  if (focus) document.querySelector(form.elements.outcome.value === 'no_response' ? 'label[for=days]' : 'label[for=response]').focus();
+  if (focus) {
+    document.querySelector(form.elements.outcome.value === 'no_response' ? 'label[for=days]' : 'label[for=response]').focus();
+    window.scrollTo(0, 0);
+  }
 }
+function leaveGenerator() {
+  drawVersion++;
+  drawing = false;
+  $('#generator').hidden = true;
+  $('#generator').removeAttribute('aria-busy');
+  $('#draw-again').disabled = false;
+}
+async function draw() {
+  if (drawing) return;
+  drawing = true;
+  const version = ++drawVersion;
+  $('#generator').setAttribute('aria-busy', 'true');
+  $('#draw-again').disabled = true;
+  $('#draw-again').textContent = 'Finding…';
+  $('#generator-status').textContent = 'Finding a reply…';
+  try {
+    const result = await repository.draw(lastDrawId);
+    if (version !== drawVersion) return;
+    if (!result) {
+      $('#generator-result').hidden = true;
+      $('#generator-status').textContent = 'Nothing’s ready to share yet. Yours could be next.';
+      $('#draw-again').textContent = 'Try again ↗';
+      return;
+    }
+    lastDrawId = result.id;
+    $('#generated-response').textContent = result.outcome === 'no_response'
+      ? `[no response for ${result.days} ${result.days === 1 ? 'day' : 'days'} after sending the email]`
+      : result.response;
+    $('#generated-context').textContent = result.career_context || '';
+    $('#generated-context').hidden = !result.career_context;
+    $('#generator-result').hidden = false;
+    $('#generator-status').textContent = '';
+    $('#draw-again').textContent = 'Another ↗';
+    $('#generator-result').focus({ preventScroll: true });
+    window.scrollTo(0, 0);
+  } catch {
+    if (version !== drawVersion) return;
+    $('#generator-status').textContent = 'Couldn’t reach the collection. Try again in a moment.';
+    $('#draw-again').textContent = 'Try again ↗';
+  } finally {
+    if (version === drawVersion) {
+      drawing = false;
+      $('#draw-again').disabled = false;
+      $('#generator').removeAttribute('aria-busy');
+    }
+  }
+}
+function showGenerator() {
+  $('#intro').hidden = true;
+  form.hidden = true;
+  $('#success').hidden = true;
+  $('#generator').hidden = false;
+  $('#generator-title').focus();
+  window.scrollTo(0, 0);
+  draw();
+}
+$('#hear').addEventListener('click', showGenerator);
+$('#success-hear').addEventListener('click', showGenerator);
+$('#draw-again').addEventListener('click', draw);
+$('#contribute').addEventListener('click', () => showCollector());
+$('#generator-back').addEventListener('click', () => {
+  leaveGenerator();
+  $('#intro').hidden = false;
+  $('#hear').focus({ preventScroll: true });
+  window.scrollTo(0, 0);
+});
 $('#begin').addEventListener('click', () => showCollector());
 $('#back').addEventListener('click', () => {
   form.hidden = true;
   $('#intro').hidden = false;
-  $('#begin').focus();
+  $('#begin').focus({ preventScroll: true });
+  window.scrollTo(0, 0);
 });
 $('#switch-outcome').addEventListener('click', () => {
   form.elements.outcome.value = form.elements.outcome.value === 'rejection' ? 'no_response' : 'rejection';

@@ -10,7 +10,7 @@ export function createRepository(config, fetcher = fetch) {
         body: JSON.stringify(body),
       });
     } catch { throw new Error('Could not reach the collection. Your text is still here; please try again.'); }
-    if (!response.ok) throw new Error('The request could not be completed. Please try again later.');
+    if (!response.ok) throw new Error(name === 'draw_rejection' ? 'Couldn’t reach the collection. Try again in a moment.' : 'The request could not be completed. Please try again later.');
     // This SQL function returns void; a successful response can have no body.
     if (name === 'submit_rejection') return;
     return response.json();
@@ -18,6 +18,7 @@ export function createRepository(config, fetcher = fetch) {
   return {
     configured,
     latest: () => rpc('latest_submission'),
+    draw: (excludeId = null) => rpc('draw_rejection', { exclude_id: excludeId }),
     submit: (data, token) => rpc('submit_rejection', { payload: data, request_id: token }),
   };
 }

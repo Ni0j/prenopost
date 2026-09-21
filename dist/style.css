@@ -1,4 +1,4 @@
-:root { color-scheme: light; --paper: #f8f5ee; --ink: #705c68; --line: #95818b; font-family: 'Iowan Old Style', 'Baskerville', 'Palatino Linotype', 'Noto Serif CJK SC', 'Songti SC', 'Source Han Serif SC', 'SimSun', serif; color: var(--ink); background: var(--paper); font-synthesis: none; }
+:root { color-scheme: light; --paper: #f8f5ee; --ink: #705c68; --line: #95818b; --heading-size: 22px; --reading-size: 18px; --meta-size: 13px; font-family: 'Iowan Old Style', 'Baskerville', 'Palatino Linotype', 'Noto Serif CJK SC', 'Songti SC', 'Source Han Serif SC', 'SimSun', serif; color: var(--ink); background: var(--paper); font-synthesis: none; }
 * { box-sizing: border-box; }
 body { margin: 0; min-height: 100svh; display: flex; flex-direction: column; font-size: 17px; line-height: 1.55; }
 button, input, textarea { font: inherit; color: inherit; }
@@ -17,18 +17,17 @@ main { width: min(100% - 48px, 390px); margin: clamp(64px, 12vh, 140px) auto 80p
 fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
 #intro { font-size: 21px; line-height: 1.65; }
 .intro-copy p { margin: 0 0 28px; }
-.invitation { font-size: 24px; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 7px; }
-.intro-afterword { font-size: 15px; font-style: italic; margin: 22px 0 0; }
-#submission, #success { margin: 0; }
+.intro-afterword { font-size: var(--meta-size); font-style: italic; margin: 24px 0 0; }
+#submission, #success, #generator { margin: 0; }
 .back { font-size: 13px; margin-top: 24px; }
 .writing { margin-top: 0; }
 .writing > label:focus { outline: none; }
-#switch-outcome { font-size: 14px; text-decoration: underline; }
-.writing > label { display: block; font-size: 22px; font-weight: normal; line-height: 1.3; }
-.aside { font-size: 13px; line-height: 1.6; }
+.secondary-action { font-size: 14px; text-decoration: underline; }
+.writing > label, .section-title { display: block; margin: 0 0 16px; font-size: var(--heading-size); font-weight: normal; line-height: 1.35; }
+.aside { font-size: var(--meta-size); line-height: 1.6; }
 textarea, input[type=number] { display: block; width: 100%; background: transparent; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; padding: 9px 0; }
 textarea { resize: vertical; }
-#response { min-height: 150px; font-size: 18px; line-height: 1.6; }
+#response { min-height: 150px; font-size: var(--reading-size); line-height: 1.6; }
 textarea::placeholder, input::placeholder { color: var(--ink); opacity: 1; font-style: italic; }
 textarea:focus, input[type=number]:focus { border-color: var(--ink); outline-offset: 5px; }
 #reply-example { font-size: 14px; }
@@ -45,18 +44,23 @@ textarea:focus, input[type=number]:focus { border-color: var(--ink); outline-off
 #error { font-size: 15px; }
 #error:empty { display: none; }
 .form-actions { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 16px; }
-.submit { font-size: 22px; border-bottom: 1px solid var(--ink); padding: 8px 0; }
+.primary-action { font-size: var(--heading-size); line-height: 1.35; border-bottom: 1px solid var(--ink); padding: 8px 0; }
 body { position: relative; padding-bottom: 104px; }
-.submit:disabled { cursor: wait; opacity: .6; }
+.primary-action:disabled { cursor: wait; opacity: .6; }
 footer { position: absolute; left: 40px; bottom: 30px; display: flex; gap: 28px; font-size: 14px; }
 dialog { color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 0; width: min(520px, calc(100% - 36px)); max-height: 85svh; padding: 28px 36px 36px; }
 dialog::backdrop { background: rgb(248 245 238 / 90%); }
-dialog h2 { font-weight: normal; font-size: 24px; margin-top: 52px; }
+dialog h2 { font-weight: normal; font-size: var(--heading-size); margin-top: 52px; }
 dialog p { font-size: 16px; }
 .close { float: right; font-size: 14px; }
-#success h1 { margin: 0 0 16px; font-weight: normal; font-size: 22px; line-height: 1.35; }
-#success p { font-size: 16px; }
-#again { margin-top: 24px; text-decoration: underline; }
+#success p { font-size: var(--reading-size); }
+.eyebrow { font-size: var(--meta-size); margin: 0 0 16px; font-style: italic; }
+#generated-response { margin: 24px 0; font-size: var(--reading-size); line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+#generator-status:empty { display: none; }
+.generator-note { margin: 16px 0 0; }
+#generator-result:focus, .section-title:focus { outline: none; }
+.intro-actions { margin-top: 24px; }
+@media (max-width: 360px) { .intro-actions { align-items: flex-start; flex-direction: column; gap: 8px; } }
 @media (max-width: 600px) {
   body { padding-bottom: 0; }
   header { padding: 24px; gap: 20px; }

@@ -108,3 +108,23 @@ test('activity still parses timestamps and failed empty submissions stay failure
     async () => new Response(null, { status: 500 }));
   await assert.rejects(createSubmissionService(failed)(input), /could not be completed/);
 });
+
+test('generator asks only for reviewed results and passes the last result to avoid repeating it', async () => {
+  const calls = [];
+  const result = { id: 'sample-id', outcome: 'no_response', response: null, days: 18, career_context: null };
+  const repo = createRepository({ url: 'https://example.supabase.co', key: 'public' }, async (url, options) => {
+    calls.push({ url, body: JSON.parse(options.body) });
+    return new Response(JSON.stringify(calls.length === 1 ? null : result));
+  });
+  assert.equal(await repo.draw(), null);
+  assert.deepEqual(await repo.draw('previous-id'), result);
+  assert.deepEqual(calls, [
+    { url: 'https://example.supabase.co/rest/v1/rpc/draw_rejection', body: { exclude_id: null } },
+    { url: 'https://example.supabase.co/rest/v1/rpc/draw_rejection', body: { exclude_id: 'previous-id' } },
+  ]);
+});
+test('a generator backend failure is not mistaken for an empty collection', async () => {
+  const repo = createRepository({ url: 'https://example.supabase.co', key: 'public' },
+    async () => new Response(null, { status: 404 }));
+  await assert.rejects(repo.draw(), /Couldn’t reach the collection/);
+});
