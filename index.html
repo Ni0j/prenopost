@@ -3,104 +3,44 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A rejection simulator made from real replies. Hear one first, or bring your own.">
+  <meta name="description" content="An open rejection mailbox. Hear one first, or bring your own.">
   <title>pre:no:post</title>
   <link rel="icon" href="./dist/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="./dist/fonts/ABCArealMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="./dist/style.css">
   <script type="module" src="./dist/app.js"></script>
 </head>
-<body>
-  <header>
-    <a class="project-name" href="./">pre:no:post</a>
-    <p class="activity">Last contribution<br><span id="latest">— unavailable</span></p>
-  </header>
-  <main id="main">
-    <section id="intro" aria-label="An invitation">
-      <div class="intro-copy">
-        <p>go reach out to someone.<br>apply for a job.</p>
-        <p>if they say yes, good for you.</p>
-        <p>if they say no, you get a rejection email,<br>or even no response at all—</p>
-      </div>
-      <div class="form-actions intro-actions">
-        <button id="hear" class="primary-action">hear one first ↗</button>
-        <button id="begin" class="secondary-action">bring yours here :)</button>
-      </div>
-      <p class="intro-afterword">someone else might need to hear it first.</p>
+<body data-page="collection">
+  <header><a class="project-name" href="./">pre:no:post</a><p class="activity">last submission<br><span id="latest" role="status">connecting…</span></p></header>
+  <main id="main" class="space-main">
+    <div class="invitation"><p>go reach out to someone.<br>apply for a job.</p><p>if they say yes, good for you.</p></div>
+    <section id="space" aria-label="Words from the rejection mailbox">
+      <div class="room" aria-hidden="true"><svg viewBox="0 0 1000 600" preserveAspectRatio="none"><path d="M240 72 H830 V504 H240 Z M0 0 L240 72 M1000 0 L830 72 M0 600 L240 504 M1000 600 L830 504"/></svg></div>
+      <div id="particles" aria-hidden="true"></div>
+      <div class="space-status"><p id="collection-status" role="status">opening the mailbox…</p><button id="retry" hidden>try again</button></div>
     </section>
-    <section id="generator" hidden aria-labelledby="generator-title">
-      <p class="eyebrow">from the collection</p>
-      <h1 id="generator-title" class="section-title" tabindex="-1">A no, before you go.</h1>
-      <p id="generator-status" class="aside" role="status" aria-live="polite"></p>
-      <div id="generator-result" hidden tabindex="-1" aria-label="A result from the collection">
-        <blockquote id="generated-response"></blockquote>
-        <p id="generated-context" class="aside" hidden></p>
-      </div>
-      <div class="form-actions">
-        <button id="draw-again" class="primary-action">Another ↗</button>
-        <button id="contribute" class="secondary-action">Bring yours</button>
-      </div>
-      <p class="aside generator-note">Real contributions, reviewed for sharing. Some details are removed for privacy.</p>
-      <button id="generator-back" class="back text-button">← the beginning</button>
-    </section>
-    <form id="submission" novalidate hidden>
-      <fieldset id="entry-fields">
-        <legend class="sr-only">Contribute a cold-outreach rejection</legend>
-        <input type="hidden" name="outcome" value="rejection">
-        <div class="writing" id="reply-fields">
-          <label for="response" tabindex="-1">Their exact words.</label>
-          <textarea id="response" name="response" required placeholder="Paste the rejection reply here." aria-describedby="response-hint response-limit error"></textarea>
-          <p id="response-hint" class="aside">Their words, without personal details.</p>
-          <details id="reply-example">
-            <summary><span class="show-example">Show example</span><span class="hide-example">Hide example</span></summary>
-            <div class="example-copy">
-              <p class="aside">The middle bit is enough.</p>
-              <p class="example-trim"><del>Hi Alex,</del></p>
-              <blockquote>Thank you for your application. Unfortunately, we won’t be moving forward with your application at this time.</blockquote>
-              <p class="example-trim"><del>Best,<br>The hiring team</del></p>
-            </div>
-          </details>
-          <p id="response-limit" class="aside" hidden>3,000 characters maximum. Please keep the reply verbatim.</p>
-        </div>
-        <div class="writing" id="silence-fields" hidden>
-          <label for="days" tabindex="-1">Still nothing after…</label>
-          <div class="days-line"><input id="days" name="days" type="number" inputmode="numeric" min="1" max="2147483647" step="1" placeholder="14" aria-label="Days since sending the email" aria-describedby="days-hint error" disabled><span>days</span></div>
-          <p id="days-hint" class="aside">Since you sent the email.</p>
-        </div>
-        <p id="error" role="alert"></p>
-        <div id="form-actions" class="form-actions">
-          <button class="submit primary-action" type="submit">Submit ↗</button>
-          <button id="switch-outcome" class="secondary-action" type="button">Or, no response?</button>
-        </div>
-      </fieldset>
-      <p id="reuse-note" class="submission-note" hidden>A reviewed copy of your contribution may appear in the simulator. Only share what you’re comfortable making public.</p>
-      <button id="back" class="back text-button" type="button">← the beginning</button>
-    </form>
-    <section id="success" hidden tabindex="-1" aria-labelledby="success-title">
-      <h1 id="success-title" class="section-title">Added to the pile.</h1>
-      <p>You’ve got company.</p>
-      <div class="form-actions">
-        <button id="success-hear" class="primary-action">Hear one first ↗</button>
-        <button id="again" class="secondary-action">Got another?</button>
-      </div>
-    </section>
-    <noscript><p class="aside">Please enable JavaScript to contribute.</p></noscript>
+    <div class="collection-tools"><button id="hear" hidden>hear one first ↗</button><button id="motion" hidden aria-pressed="false">pause movement</button></div>
+    <div class="entry-point"><p>if they say no, or nothing at all—</p><a class="primary-action" href="./submit.html">bring yours here ↗</a><p>someone else might need to hear it first.</p></div>
+    <section id="reading" hidden aria-label="A reply from the collection"><button id="reading-close">close ×</button><p id="reading-label"></p><div id="reading-text" class="public-copy" tabindex="-1"></div><button id="another">another ↗</button></section>
+    <noscript><p>Please enable JavaScript to open the mailbox.</p></noscript>
   </main>
-  <footer><button class="text-button" data-dialog="about">About</button><button class="text-button" data-dialog="privacy">Privacy</button></footer>
-  <dialog id="about" aria-labelledby="about-title">
+  <footer><button class="text-button" data-dialog="about">about</button><button class="text-button" data-dialog="privacy">privacy declaration</button></footer>  <dialog id="about" aria-labelledby="about-title">
     <button class="close text-button" autofocus>Close ×</button>
     <h2 id="about-title">pre:no:post</h2>
     <p>A rejection simulator needs rejections. This is where we collect them.</p>
     <p>Real cold-outreach replies, copied word for word. Or the number of days you’ve heard nothing. No positive replies. They have enough places to go.</p>
-    <p>Hear a real reply before you go asking. Then bring your own, if you get one. The simulator draws from reviewed contributions; it doesn’t predict your outcome.</p>
+    <p>Hear a real reply before you go asking. Then bring your own, if you get one. The collection uses reviewed contributions; it doesn’t predict your outcome.</p>
   </dialog>
   <dialog id="privacy" aria-labelledby="privacy-title">
     <button class="close text-button" autofocus>Close ×</button>
-    <h2 id="privacy-title">Privacy</h2>
-    <p>No account. No name fields. Please leave out names, application numbers, contact details, and private links before pasting. We don’t automatically anonymize your text.</p>
-    <p>Share only the rejection reply, never your original outreach email. Keep its wording unchanged apart from removing identifying details.</p>
-    <p>Your original contribution stays private. We prepare a separate public copy and review it before it can appear in the simulator. Application numbers, names, contact details, and identifying combinations are removed from that copy. A broad career label may be kept for context.</p>
-    <p>There’s no withdrawal option after submitting. Only send something you’re comfortable contributing.</p>
-    <p>This application uses no analytics or cookies. Hosting and database providers may retain technical request logs.</p>
+    <h2 id="privacy-title">Privacy declaration</h2>
+    <p>No account. No name fields. Paste the reply as it is. We detect identifying details and show you the public version before you submit.</p>
+    <p>Only the processed version is saved to the mailbox. Redacted details become black blocks; their original text is not included in the public collection.</p>
+    <p>Your preview is prepared in your browser. Only the version you confirm is sent to Supabase. The original text is not sent or saved by this submission flow. We use no external AI service.</p>
+    <p>Rule-based detection can miss names, companies and other identifying information. Review the preview before confirming. You can go back and edit if something was missed.</p>
+    <p>Submissions stay private until reviewed. We check identifying details before sharing a copy and may remove additional details. Not every contribution will appear in the public collection.</p>
+    <p>There’s no withdrawal option after submitting. Only send something you’re comfortable contributing. The words remain with their respective rights holders.</p>
+    <p>This application uses no analytics or cookies. Hosting and database providers may retain technical request logs. </p>
   </dialog>
 </body>
 </html>

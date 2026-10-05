@@ -1,24 +1,26 @@
 export function createRepository(config, fetcher = fetch) {
   const configured = Boolean(config.url && config.key);
-  async function rpc(name, body = {}) {
-    if (!configured) throw new Error('Submissions are not connected yet. Your words have not been sent.');
+  async function request(path, body) {
+    if (!configured) throw new Error('The mailbox is not connected yet. Your words have not been sent.');
     let response;
     try {
-      response = await fetcher(`${config.url.replace(/\/$/, '')}/rest/v1/rpc/${name}`, {
-        method: 'POST',
-        headers: { apikey: config.key, 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+      response = await fetcher(`${config.url.replace(/\/$/, '')}${path}`, {
+        method: 'POST', headers: { apikey: config.key, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body), signal: AbortSignal.timeout(40000),
       });
-    } catch { throw new Error('Could not reach the collection. Your text is still here; please try again.'); }
-    if (!response.ok) throw new Error(name === 'draw_rejection' ? 'Couldn’t reach the collection. Try again in a moment.' : 'The request could not be completed. Please try again later.');
-    // This SQL function returns void; a successful response can have no body.
-    if (name === 'submit_rejection') return;
-    return response.json();
+    } catch { throw new Error('Could not reach the mailbox. Your text is still here; please try again.'); }
+    let result; try { result = await response.json(); } catch { throw new Error('The mailbox returned an incomplete response. Please try again.'); }
+    if (!response.ok) {
+      // Only the mailbox function emits user-facing errors; never expose DB details.
+      const error = new Error(path.startsWith('/functions/') && typeof result?.error === 'string' ? result.error : 'Couldn’t reach the collection. Please try again.');
+      error.status = response.status; throw error;
+    }
+    return result;
   }
   return {
     configured,
-    latest: () => rpc('latest_submission'),
-    draw: (excludeId = null) => rpc('draw_rejection', { exclude_id: excludeId }),
-    submit: (data, token) => rpc('submit_rejection', { payload: data, request_id: token }),
+    latest: () => request('/rest/v1/rpc/latest_submission', {}),
+    collection: () => request('/rest/v1/rpc/mailbox_collection', {}),
+    submit: (entry, id) => request('/rest/v1/rpc/submit_mailbox_entry', { payload: entry, entry_id: id }),
   };
 }

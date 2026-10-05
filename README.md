@@ -8,9 +8,11 @@ If they say no—or say nothing at all—bring it here. Someone else might need 
 
 prenopost is an independent web project about rejection and the anticipation of it. It collects real replies and unanswered emails. Reviewed contributions become the material for a rejection simulator: a place to encounter the “no” before going out and asking.
 
-For now, the collection is open. Paste a rejection in its original words, with identifying details removed, or leave the number of days you’ve been waiting. No names, no accounts, no original outreach messages.
+For now, the collection is open. Paste a rejection in its original words, preview the automatically redacted version, and confirm it for the collection. Or leave the number of days you’ve been waiting. No names, no accounts, no original outreach messages.
 
-The simulator draws from reviewed public copies. Original contributions stay private. The words stay with the people who wrote them; the collection gives them another place to be heard.
+The collection receives only processed public copies, after review. New original submissions are not stored in the database. The preview is prepared locally in your browser. The words stay with the people who wrote them; the collection gives them another place to be heard.
+
+Implementation and deployment: [mailbox setup](supabase/MAILBOX.md).
 
 [Visit prenopost](https://ni0j.github.io/prenopost/)
 

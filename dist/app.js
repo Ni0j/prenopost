@@ -1,210 +1,104 @@
 import config from './config.js';
 import { createRepository } from './lib/supabase.js';
 import { createSubmissionService } from './lib/submission.js';
-import { validateSubmission } from './lib/validation.js';
-
+import { renderEntry } from './lib/render.js';
+import { createSpace } from './space.js';
 const repository = createRepository(config);
-const submit = createSubmissionService(repository);
 const $ = selector => document.querySelector(selector);
-const form = $('#submission');
-const button = $('.submit');
-let sending = false;
-let drawing = false;
-let lastDrawId = null;
-let drawVersion = 0;
-if (!repository.configured) $('#latest').textContent = '— not connected yet';
-async function refreshActivity() {
-  if (!repository.configured) return;
-  try {
-    const value = await repository.latest();
-    if (!value) { $('#latest').textContent = '— no contributions yet'; return; }
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) throw new Error('Invalid timestamp');
-    const time = document.createElement('time');
-    time.dateTime = date.toISOString();
-    const day = document.createElement('span');
-    day.textContent = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
-    const clock = document.createElement('span');
-    clock.textContent = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' }).format(date);
-    time.title = `Your timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`;
-    time.append(day, clock);
-    $('#latest').replaceChildren(time);
-  } catch { $('#latest').textContent = '— unavailable'; }
-}
-refreshActivity();
-function clearError() {
-  $('#error').textContent = '';
-  $('#form-actions').before($('#error'));
-  $('#response').removeAttribute('aria-invalid');
-  $('#days').removeAttribute('aria-invalid');
-}
-function updateBranch() {
-  const silence = form.elements.outcome.value === 'no_response';
-  $('#reply-fields').hidden = silence;
-  $('#silence-fields').hidden = !silence;
-  $('#response').disabled = silence;
-  $('#response').required = !silence;
-  $('#days').disabled = !silence;
-  $('#days').required = silence;
-  $('#switch-outcome').textContent = silence ? 'Have a reply instead?' : 'Or, no response?';
-  clearError();
-}
-function showCollector(focus = true) {
-  leaveGenerator();
-  $('#intro').hidden = true;
-  $('#success').hidden = true;
-  form.hidden = false;
-  if (focus) {
-    document.querySelector(form.elements.outcome.value === 'no_response' ? 'label[for=days]' : 'label[for=response]').focus();
-    window.scrollTo(0, 0);
-  }
-}
-function leaveGenerator() {
-  drawVersion++;
-  drawing = false;
-  $('#generator').hidden = true;
-  $('#generator').removeAttribute('aria-busy');
-  $('#draw-again').disabled = false;
-}
-async function draw() {
-  if (drawing) return;
-  drawing = true;
-  const version = ++drawVersion;
-  $('#generator').setAttribute('aria-busy', 'true');
-  $('#draw-again').disabled = true;
-  $('#draw-again').textContent = 'Finding…';
-  $('#generator-status').textContent = 'Finding a reply…';
-  try {
-    const result = await repository.draw(lastDrawId);
-    if (version !== drawVersion) return;
-    if (!result) {
-      $('#generator-result').hidden = true;
-      $('#generator-status').textContent = 'Nothing’s ready to share yet. Yours could be next.';
-      $('#draw-again').textContent = 'Try again ↗';
-      return;
-    }
-    lastDrawId = result.id;
-    $('#generated-response').textContent = result.outcome === 'no_response'
-      ? `[no response for ${result.days} ${result.days === 1 ? 'day' : 'days'} after sending the email]`
-      : result.response;
-    $('#generated-context').textContent = result.career_context || '';
-    $('#generated-context').hidden = !result.career_context;
-    $('#generator-result').hidden = false;
-    $('#generator-status').textContent = '';
-    $('#draw-again').textContent = 'Another ↗';
-    $('#generator-result').focus({ preventScroll: true });
-    window.scrollTo(0, 0);
-  } catch {
-    if (version !== drawVersion) return;
-    $('#generator-status').textContent = 'Couldn’t reach the collection. Try again in a moment.';
-    $('#draw-again').textContent = 'Try again ↗';
-  } finally {
-    if (version === drawVersion) {
-      drawing = false;
-      $('#draw-again').disabled = false;
-      $('#generator').removeAttribute('aria-busy');
-    }
-  }
-}
-function showGenerator() {
-  $('#intro').hidden = true;
-  form.hidden = true;
-  $('#success').hidden = true;
-  $('#generator').hidden = false;
-  $('#generator-title').focus();
-  window.scrollTo(0, 0);
-  draw();
-}
-$('#hear').addEventListener('click', showGenerator);
-$('#success-hear').addEventListener('click', showGenerator);
-$('#draw-again').addEventListener('click', draw);
-$('#contribute').addEventListener('click', () => showCollector());
-$('#generator-back').addEventListener('click', () => {
-  leaveGenerator();
-  $('#intro').hidden = false;
-  $('#hear').focus({ preventScroll: true });
-  window.scrollTo(0, 0);
-});
-$('#begin').addEventListener('click', () => showCollector());
-$('#back').addEventListener('click', () => {
-  form.hidden = true;
-  $('#intro').hidden = false;
-  $('#begin').focus({ preventScroll: true });
-  window.scrollTo(0, 0);
-});
-$('#switch-outcome').addEventListener('click', () => {
-  form.elements.outcome.value = form.elements.outcome.value === 'rejection' ? 'no_response' : 'rejection';
-  updateBranch();
-  document.querySelector(form.elements.outcome.value === 'no_response' ? 'label[for=days]' : 'label[for=response]').focus();
-});
-form.addEventListener('focusin', event => {
-  if (event.target.matches('#response, #days')) $('#reuse-note').hidden = false;
-});
-form.addEventListener('input', () => {
-  clearError();
-  $('#reuse-note').hidden = false;
-  $('#response-limit').hidden = $('#response').value.length < 2800;
-});
-async function send(input) {
-  if (sending) throw new Error('Already sending this one.');
-  showCollector(false);
-  $('#reuse-note').hidden = false;
-  clearError();
-  try { validateSubmission(input); }
-  catch (error) {
-    $('#error').textContent = error.message;
-    const field = input.outcome === 'no_response' ? $('#days') : $('#response');
-    (input.outcome === 'no_response' ? $('.days-line') : field).after($('#error'));
-    field.setAttribute('aria-invalid', 'true');
-    field.focus();
-    throw error;
-  }
-  sending = true;
-  button.disabled = true;
-  $('#back').disabled = true;
-  $('#entry-fields').disabled = true;
-  form.setAttribute('aria-busy', 'true');
-  button.textContent = 'Sending…';
-  try {
-    await submit(input);
-    form.hidden = true;
-    $('#success').hidden = false;
-    $('#success').focus();
-    refreshActivity();
-    return { status: 'pending' };
-  } catch (error) {
-    $('#error').textContent = error.message;
-    throw error;
-  } finally {
-    sending = false;
-    button.disabled = false;
-    $('#back').disabled = false;
-    $('#entry-fields').disabled = false;
-    form.removeAttribute('aria-busy');
-    button.textContent = 'Submit ↗';
-  }
-}
-form.addEventListener('submit', event => {
-  event.preventDefault();
-  send(Object.fromEntries(new FormData(form))).catch(() => {});
-});
-$('#again').addEventListener('click', () => {
-  form.reset();
-  $('#reply-example').open = false;
-  form.elements.outcome.value = 'rejection';
-  updateBranch();
-  $('#response-limit').hidden = true;
-  $('#reuse-note').hidden = true;
-  showCollector();
-});
 document.querySelectorAll('[data-dialog]').forEach(button => button.addEventListener('click', () => $(`#${button.dataset.dialog}`).showModal()));
 document.querySelectorAll('.close').forEach(button => button.addEventListener('click', () => button.closest('dialog').close()));
 
-if (document.modelContext?.registerTool) {
-  Promise.resolve(document.modelContext.registerTool({
-    name: 'submit_outcome',
-    description: 'Contribute a verbatim cold-outreach rejection or days without a reply for review and future use in the rejection simulator. Remove identifying details first. Submissions cannot be withdrawn.',
-    inputSchema: { type: 'object', properties: { outcome: { type: 'string', enum: ['rejection', 'no_response'] }, response: { type: 'string', maxLength: 3000 }, days: { type: 'integer', minimum: 1, maximum: 2147483647 } }, required: ['outcome'], additionalProperties: false },
-    execute: send,
-  })).catch(() => {});
+if (document.body.dataset.page === 'collection') {
+  let entries = []; let index = -1;
+  const space = createSpace($('#particles'), entry => openEntry(entry));
+  function openEntry(entry) {
+    index = entries.findIndex(e => e.id === entry.id);
+    $('#reading-label').textContent = 'from the collection';
+    renderEntry($('#reading-text'), entry);
+    $('#reading').hidden = false;
+    $('#reading-text').focus({ preventScroll: true });
+  }
+  function next() { if (entries.length) openEntry(entries[(index + 1) % entries.length]); }
+  $('#hear').addEventListener('click', next);
+  $('#another').addEventListener('click', next);
+  $('#reading-close').addEventListener('click', () => { $('#reading').hidden = true; $('#hear').focus(); });
+  $('#motion').addEventListener('click', () => {
+    const paused = $('#motion').getAttribute('aria-pressed') !== 'true';
+    $('#motion').setAttribute('aria-pressed', String(paused));
+    $('#motion').textContent = paused ? 'resume movement' : 'pause movement'; space.pause(paused);
+  });
+  async function activity() {
+    try {
+      const value = await repository.latest();
+      if (!value) { $('#latest').textContent = 'no submissions yet'; return; }
+      const date = new Date(value); if (Number.isNaN(date.getTime())) throw 0;
+      const time = document.createElement('time'); time.dateTime = date.toISOString();
+      time.textContent = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(date);
+      $('#latest').replaceChildren(time);
+    } catch { $('#latest').textContent = 'unavailable'; }
+  }
+  async function load() {
+    $('#retry').hidden = true; $('#collection-status').textContent = 'opening the mailbox…';
+    try {
+      const result = await repository.collection();
+      if (!Array.isArray(result)) throw 0;
+      entries = result; space.set(entries);
+      $('#collection-status').textContent = entries.length ? '' : 'nothing here yet.\nyours can be the first.';
+      $('#hear').hidden = $('#motion').hidden = !entries.length;
+    } catch { $('#collection-status').textContent = 'the collection could not be reached.'; $('#retry').hidden = false; }
+  }
+  $('#retry').addEventListener('click', () => { load(); activity(); });
+  activity(); load();
+} else {
+  const service = createSubmissionService(repository);
+  const form = $('#submission'); let busy = false;
+  const input = () => ({ outcome: form.elements.outcome.value, response: $('#response').value, days: $('#days').value });
+  function invalidate() { service.invalidate(); $('#preview').hidden = true; $('#error').textContent = ''; $('#form-status').textContent = ''; }
+  form.addEventListener('input', invalidate);
+  function choose(outcome) {
+    if (busy) return;
+    invalidate(); form.elements.outcome.value = outcome;
+    const silence = outcome === 'no_response';
+    $('#reply-fields').hidden = silence; $('#silence-fields').hidden = !silence;
+    $('#response').disabled = silence; $('#response').required = !silence;
+    $('#days').disabled = !silence; $('#days').required = silence;
+    $('#processing-note').hidden = silence;
+    $('#reply-outcome').setAttribute('aria-pressed', String(!silence));
+    $('#silence-outcome').setAttribute('aria-pressed', String(silence));
+  }
+  $('#reply-outcome').addEventListener('click', () => choose('rejection'));
+  $('#silence-outcome').addEventListener('click', () => choose('no_response'));
+  form.addEventListener('submit', async event => {
+    event.preventDefault(); if (busy) return; busy = true;
+    $('#error').textContent = ''; $('#form-status').textContent = 'preparing your public version…';
+    $('#preview-button').disabled = true; $('#preview-button').textContent = 'detecting…';
+    form.setAttribute('aria-busy', 'true');
+    try {
+      const result = await service.prepare(input());
+      if (!result) return;
+      renderEntry($('#preview-text'), result.entry);
+      form.hidden = true; $('#preview').hidden = false; $('#preview-title').focus();
+    } catch (error) { $('#error').textContent = error.message; }
+    finally { busy = false; $('#form-status').textContent = ''; $('#preview-button').disabled = false; $('#preview-button').textContent = 'preview what will be shared ↗'; form.removeAttribute('aria-busy'); }
+  });
+  $('#edit').addEventListener('click', () => {
+    if (busy) return; invalidate(); form.hidden = false;
+    $('#confirm-error').textContent = ''; (input().outcome === 'rejection' ? $('#response') : $('#days')).focus();
+  });
+  $('#confirm').addEventListener('click', async () => {
+    if (busy) return; busy = true; $('#confirm-error').textContent = '';
+    $('#confirm').disabled = $('#edit').disabled = true; $('#confirm').textContent = 'sending…';
+    try {
+      await service.confirm(input());
+      // Clear the only original-text copy after confirmed storage.
+      form.reset(); $('#preview-text').replaceChildren();
+      $('#preview').hidden = true; $('#success').hidden = false; $('#success').focus();
+    } catch (error) {
+      if (error.status === 409) {
+        invalidate(); form.hidden = false; $('#error').textContent = error.message; $('#preview-button').focus();
+      } else $('#confirm-error').textContent = error.message;
+    }
+    finally { busy = false; $('#confirm').disabled = $('#edit').disabled = false; $('#confirm').textContent = 'submit this version ↗'; }
+  });
+  $('#again').addEventListener('click', () => { $('#success').hidden = true; choose('rejection'); form.hidden = false; $('#response').focus(); });
 }

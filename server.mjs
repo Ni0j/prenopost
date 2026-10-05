@@ -4,15 +4,15 @@ import { resolve, extname } from 'node:path';
 import config from './dist/config.js';
 
 const root = resolve('dist');
-const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
+const types = { '.html': 'text/html; charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.woff2': 'font/woff2' };
 createServer(async (req, res) => {
   const pathname = new URL(req.url, 'http://localhost').pathname;
   if (pathname === '/dist/config.js') {
     res.writeHead(200, { 'Content-Type': 'text/javascript', 'Cache-Control': 'no-store' });
     return res.end(`export default ${JSON.stringify({ url: process.env.SUPABASE_URL || config.url, key: process.env.SUPABASE_PUBLISHABLE_KEY || config.key })};`);
   }
-  const isIndex = pathname === '/' || pathname === '/index.html';
-  const file = isIndex ? resolve('index.html') : resolve(root, '.' + pathname.slice('/dist'.length));
+  const isIndex = pathname === '/' || pathname === '/index.html' || pathname === '/submit.html';
+  const file = isIndex ? resolve(pathname === '/submit.html' ? 'submit.html' : 'index.html') : resolve(root, '.' + pathname.slice('/dist'.length));
   if (!isIndex && (!pathname.startsWith('/dist/') || !file.startsWith(root + '/'))) { res.writeHead(404); return res.end(); }
   try {
     const body = await readFile(file);

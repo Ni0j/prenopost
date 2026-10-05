@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An open rejection mailbox. Hear one first, or bring your own.">
+  <title>pre:no:post</title>
+  <link rel="icon" href="./dist/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="./dist/fonts/ABCArealMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="./dist/style.css">
+  <script type="module" src="./dist/app.js"></script>
+</head>
+<body data-page="submission">
+  <header><a class="project-name" href="./">pre:no:post</a><a href="./">← the collection</a></header>
+  <main id="main" class="submission-main">
+    <form id="submission" novalidate>
+      <h1>bring yours here.</h1>
+      <p class="form-intro">Their exact words.<br>We’ll find identifying details. You’ll see what stays.</p>
+      <fieldset id="entry-fields"><legend class="sr-only">Contribute a rejection or days without a reply</legend>
+        <div class="outcome-options" role="group" aria-label="What came back?">
+          <button type="button" id="reply-outcome" aria-pressed="true">I got a reply</button>
+          <button type="button" id="silence-outcome" aria-pressed="false">I heard nothing</button>
+        </div>
+        <input type="hidden" name="outcome" value="rejection">
+        <div id="reply-fields"><label for="response">Paste the rejection reply.</label><textarea id="response" name="response" required aria-describedby="response-hint error" placeholder="Their words, as they are."></textarea><p id="response-hint">We check contact details, greetings, signatures and common company-name patterns.<br>3,000 characters maximum.</p></div>
+        <div id="silence-fields" hidden><label for="days">Still nothing after…</label><div class="days-line"><input id="days" name="days" type="number" inputmode="numeric" min="1" max="2147483647" step="1" placeholder="14" disabled aria-describedby="days-hint error"><span>days</span></div><p id="days-hint">Since you sent the email.</p></div>
+        <p id="processing-note">The preview stays in your browser. Only the version you confirm is sent. <button type="button" data-dialog="privacy">Privacy declaration ↗</button></p>
+        <button id="preview-button" class="primary-action" type="submit">preview what will be shared ↗</button>
+      </fieldset>
+      <p id="error" role="alert"></p><p id="form-status" role="status"></p>
+    </form>
+    <section id="preview" hidden aria-labelledby="preview-title">
+      <h2 id="preview-title" tabindex="-1">Your submission.</h2>
+      <div id="preview-text" class="public-copy"></div>
+      <p>Black blocks replace detected identifying details.<br>Please check: local rules can miss names and other details.</p>
+      <p>Only this version is sent. A reviewed copy may appear in the collection. There’s no withdrawal option after submitting.</p>
+      <div class="form-actions"><button id="confirm" class="primary-action">submit this version ↗</button><button id="edit">← edit</button></div>
+      <p id="confirm-error" role="alert"></p>
+    </section>
+    <section id="success" hidden tabindex="-1"><h2>Added to the pile.</h2><p>You’ve got company.</p><p>Your contribution has been received.</p><div class="form-actions"><a class="primary-action" href="./">hear one first ↗</a><button id="again">add another</button></div></section>
+    <noscript><p>Please enable JavaScript to contribute.</p></noscript>
+  </main>
+  <footer><button class="text-button" data-dialog="about">about</button><button class="text-button" data-dialog="privacy">privacy declaration</button></footer>  <dialog id="about" aria-labelledby="about-title">
+    <button class="close text-button" autofocus>Close ×</button>
+    <h2 id="about-title">pre:no:post</h2>
+    <p>A rejection simulator needs rejections. This is where we collect them.</p>
+    <p>Real cold-outreach replies, copied word for word. Or the number of days you’ve heard nothing. No positive replies. They have enough places to go.</p>
+    <p>Hear a real reply before you go asking. Then bring your own, if you get one. The collection uses reviewed contributions; it doesn’t predict your outcome.</p>
+  </dialog>
+  <dialog id="privacy" aria-labelledby="privacy-title">
+    <button class="close text-button" autofocus>Close ×</button>
+    <h2 id="privacy-title">Privacy declaration</h2>
+    <p>No account. No name fields. Paste the reply as it is. We detect identifying details and show you the public version before you submit.</p>
+    <p>Only the processed version is saved to the mailbox. Redacted details become black blocks; their original text is not included in the public collection.</p>
+    <p>Your preview is prepared in your browser. Only the version you confirm is sent to Supabase. The original text is not sent or saved by this submission flow. We use no external AI service.</p>
+    <p>Rule-based detection can miss names, companies and other identifying information. Review the preview before confirming. You can go back and edit if something was missed.</p>
+    <p>Submissions stay private until reviewed. We check identifying details before sharing a copy and may remove additional details. Not every contribution will appear in the public collection.</p>
+    <p>There’s no withdrawal option after submitting. Only send something you’re comfortable contributing. The words remain with their respective rights holders.</p>
+    <p>This application uses no analytics or cookies. Hosting and database providers may retain technical request logs. </p>
+  </dialog>
+</body>
+</html>
