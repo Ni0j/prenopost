@@ -1,3 +1,5 @@
+> Current review interface: [ADMIN.md](ADMIN.md). After the moderation migration, new submissions are stored privately in `mailbox_queue`, and only approved copies enter `mailbox_entries`. Use the admin page rather than direct Table Editor approval.
+
 # Mailbox setup and review
 
 The static frontend prepares a redacted preview locally in the browser. Only the confirmed representation is sent to Supabase. There is no AI dependency, detector API, Edge Function, signing secret, or new service. Existing hosting/database quotas still apply.

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer"><title>prenopost · review</title><link rel="stylesheet" href="./dist/style.css"><link rel="stylesheet" href="./dist/admin.css"><script type="module" src="./dist/admin.js"></script></head>
+<body><header><a href="./">pre:no:post</a><span>private review</span></header>
+<main class="admin-main">
+ <form id="login"><h1>Sign in</h1><label for="email">Email</label><input id="email" type="email" autocomplete="username" required><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required><button class="primary-action">sign in ↗</button><p>Access is limited to the designated moderator.</p></form>
+ <p id="notice" role="status"></p><p id="admin-error" role="alert"></p>
+ <section id="workspace" hidden>
+  <div class="admin-tools"><label for="filter">Submissions</label><select id="filter"><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option></select><button id="reload">refresh</button><button id="logout">sign out</button></div>
+  <div class="review-layout"><nav aria-label="Submissions to review"><div id="queue"></div><div class="admin-tools"><button id="previous" disabled>← previous</button><button id="next" disabled>next →</button></div></nav>
+   <section id="review" hidden><h2 id="item-title" tabindex="-1">Submission</h2><p id="item-meta"></p><div id="incoming" class="public-copy"></div>
+    <label for="extra">Additional text to redact (one phrase per line)</label><textarea id="extra" rows="3" placeholder="Optional: any identifying details the rules missed"></textarea>
+    <button id="prepare" class="primary-action">prepare public copy ↗</button>
+    <section id="public-preview" hidden><h3>Public copy</h3><div id="processed" class="public-copy"></div><p>Check the remaining text and black blocks before publishing.</p><button id="approve" class="primary-action">approve &amp; publish ↗</button></section>
+    <div class="reject-actions"><button id="reject">reject submission</button><span id="reject-confirm" hidden>Keep this submission out of the collection? <button id="reject-yes">confirm rejection</button><button id="reject-no">cancel</button></span></div>
+   </section>
+  </div>
+ </section>
+</main></body></html>

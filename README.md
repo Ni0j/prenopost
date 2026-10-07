@@ -12,7 +12,7 @@ For now, the collection is open. Paste a rejection in its original words, previe
 
 The collection receives only processed public copies, after review. New original submissions are not stored in the database. The preview is prepared locally in your browser. The words stay with the people who wrote them; the collection gives them another place to be heard.
 
-Implementation and deployment: [mailbox setup](supabase/MAILBOX.md).
+Implementation and deployment: [mailbox setup](supabase/MAILBOX.md). Private moderation: [admin setup](supabase/ADMIN.md).
 
 [Visit prenopost](https://ni0j.github.io/prenopost/)
 
